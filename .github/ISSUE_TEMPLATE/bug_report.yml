@@ -1,12 +1,8 @@
 name: Bug Report
 description: File a bug report
-title: "[Bug]: "
+title: "",
 labels: [bug]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
   - type: textarea
     id: what-happened
     attributes:
@@ -41,7 +37,7 @@ body:
       label: Are any other plugins required to see the issue?
       description: Please tell us which ones
     validations:
-      required: true
+      required: false
   - type: textarea
     id: logs
     attributes:
