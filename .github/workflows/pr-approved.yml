@@ -34,7 +34,7 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issueNumber,
-                  labels: ['your-label-name']  // Replace with your label
+                  labels: ['approved']  // Replace with your label
                 });
               }
             } else {
