@@ -2,12 +2,17 @@ on:
   pull_request_review:
     types: [submitted]
 
+
 jobs:
-  label_issue:
+ approved:
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
-      - env:
+      - run: gh issue edit "$NUMBER" --add-label "$LABELS"
+        env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
-        run: |
-          gh issue edit $ISSUE_URL --add-label "approved"
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          LABELS: approved
