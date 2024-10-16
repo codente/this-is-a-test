@@ -1,0 +1,36 @@
+name: Label Issue on PR Approval
+
+on:
+  pull_request:
+    types: [review_requested, reviewed]
+
+jobs:
+  label_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for approval
+        id: check_approval
+        run: |
+          if [[ "${{ github.event.review.state }}" == "approved" ]]; then
+            echo "approved=true" >> $GITHUB_ENV
+          else
+            echo "approved=false" >> $GITHUB_ENV
+          fi
+
+      - name: Add label to linked issue
+        if: env.approved == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const linkedIssues = context.payload.pull_request.body.match(/#(\\d+)/g) || [];
+            
+            for (const issue of linkedIssues) {
+              const issueNumber = issue.replace('#', '');
+              await github.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['approved']  // Replace with your label
+              });
+            }
