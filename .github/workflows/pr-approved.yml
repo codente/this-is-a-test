@@ -2,7 +2,7 @@ name: Label Issue on PR Approval
 
 on:
   pull_request_review:
-    types: [review_requested, reviewed, submitted]
+    types: [submitted]
 
 jobs:
   label_issue:
