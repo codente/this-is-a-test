@@ -37,7 +37,7 @@ jobs:
                 console.log(`Attempting to add label to issue #${issueNumber}`);
 
                 try {
-                  const response = await github.issues.addLabels({
+                  const response = await octokit.rest.issues.addLabels({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: parseInt(issueNumber),
