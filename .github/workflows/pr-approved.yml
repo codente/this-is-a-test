@@ -28,20 +28,20 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             console.log(`PR Body: ${pr.body}`);
-            const linkedIssues = pr.body.match(/(?:fixes|resolves|addresses)\s*#\d+/gi) || [];
-            console.log(`Found linked issues: ${linkedIssues}`);
+            const linkedIssues = pr.body.match(/(?:fixes|resolves|addresses)\s*#(\d+)/gi) || [];
 
             if (linkedIssues.length > 0) {
               for (const issue of linkedIssues) {
-                const issueNumber = issue.replace('#', '');
+                // Extract just the number part (the digits after the # symbol)
+                const issueNumber = issue.match(/#(\d+)/)[1];  // Extract the digits after '#'
                 console.log(`Attempting to add label to issue #${issueNumber}`);
-
+            
                 try {
                   const response = await github.rest.issues.addLabels({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    issue_number: parseInt(issueNumber),
-                    labels: ['status: approved']  // Replace with your actual label
+                    issue_number: parseInt(issueNumber),  // Convert issue number to integer
+                    labels: ['your-label-name']  // Replace with your actual label
                   });
                   console.log(`Label added to issue #${issueNumber}:`, response.data);
                 } catch (error) {
