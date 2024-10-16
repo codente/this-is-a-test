@@ -28,7 +28,7 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             console.log(`PR Body: ${pr.body}`);
-            const linkedIssues = pr.body.match(/(?:Fixes|Resolves|Addresses) #(\d+)/gi) || [];
+            const linkedIssues = pr.body.match(/(?:fixes|resolves|addresses)\s*#(\d+)/gi) || [];
             console.log(`Found linked issues: ${linkedIssues}`);
 
             if (linkedIssues.length > 0) {
