@@ -3,12 +3,11 @@ on:
     types: [submitted]
 
 jobs:
-  approved:
-    if: github.event.review.state == 'approved'
-   runs-on: ubuntu-latest
+  label_issue:
+    runs-on: ubuntu-latest
     steps:
       - env:
-          GH_TOKEN: ${{ secrets.MY_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
           gh issue edit $ISSUE_URL --add-label "approved"
