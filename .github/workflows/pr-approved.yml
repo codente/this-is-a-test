@@ -2,7 +2,7 @@ name: Label Issue on PR Approval
 
 on:
   pull_request:
-    types: [review_requested, reviewed]
+    types: [review]
 
 jobs:
   label_issue:
@@ -22,15 +22,21 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const prNumber = context.payload.pull_request.number;
-            const linkedIssues = context.payload.pull_request.body.match(/#(\\d+)/g) || [];
-            
-            for (const issue of linkedIssues) {
-              const issueNumber = issue.replace('#', '');
-              await github.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                labels: approved  // Replace with your label
-              });
+            const pr = context.payload.pull_request;
+            const linkedIssues = pr.body.match(/#(\\d+)/g) || [];
+            console.log(`Found linked issues: ${linkedIssues}`);
+
+            if (linkedIssues.length > 0) {
+              for (const issue of linkedIssues) {
+                const issueNumber = issue.replace('#', '');
+                console.log(`Adding label to issue #${issueNumber}`);
+                await github.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  labels: ['your-label-name']  // Replace with your label
+                });
+              }
+            } else {
+              console.log('No linked issues found in PR body.');
             }
