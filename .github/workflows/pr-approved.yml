@@ -31,13 +31,20 @@ jobs:
               for (const issue of linkedIssues) {
                 const issueNumber = issue.replace('#', '');
                 console.log(`Adding label to issue #${issueNumber}`);
-                await github.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                  labels: ['approved']  // Replace with your label
-                });
+
+                try {
+                  await github.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: parseInt(issueNumber),  // Ensure it's an integer
+                    labels: ['approved']  // Replace with your label
+                  });
+                } catch (error) {
+                  console.error(`Failed to add label to issue #${issueNumber}: ${error.message}`);
+                }
               }
             } else {
               console.log('No linked issues found in PR body.');
             }
+        - name: Print PR Body
+        run: echo "${{ github.event.pull_request.body }}"
