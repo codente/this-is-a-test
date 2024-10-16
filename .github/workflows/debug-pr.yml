@@ -2,7 +2,7 @@ name: Debug PR Body
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [review_requested, reviewed]
 
 jobs:
   debug:
