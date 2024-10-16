@@ -2,7 +2,7 @@ name: Label Issue on PR Approval
 
 on:
   pull_request_review:
-    types: [review_requested, reviewed]
+    types: [review_requested, reviewed, submitted]
 
 jobs:
   label_issue:
@@ -17,6 +17,9 @@ jobs:
           else
             echo "approved=false" >> $GITHUB_ENV
           fi
+
+      - name: Print PR Body
+        run: echo "${{ github.event.pull_request.body }}"
 
       - name: Add label to linked issue
         if: env.approved == 'true'
@@ -36,7 +39,7 @@ jobs:
                   await github.issues.addLabels({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    issue_number: parseInt(issueNumber),  // Ensure it's an integer
+                    issue_number: parseInt(issueNumber),
                     labels: ['approved']  // Replace with your label
                   });
                 } catch (error) {
@@ -46,5 +49,3 @@ jobs:
             } else {
               console.log('No linked issues found in PR body.');
             }
-        - name: Print PR Body
-        run: echo "${{ github.event.pull_request.body }}"
