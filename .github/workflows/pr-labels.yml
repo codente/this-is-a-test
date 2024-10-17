@@ -105,9 +105,9 @@ jobs:
                     issue_number: parseInt(issueNumber),  // Convert issue number to integer
                     labels: ['status: has pull request']  // Replace with your actual label
                   });
-                  console.log(`Label added to issue #${issueNumber}:`, response.data);
+                  console.log(`Label removed to issue #${issueNumber}:`, response.data);
                 } catch (error) {
-                  console.error(`Failed to add label to issue #${issueNumber}: ${error.message}`);
+                  console.error(`Failed to remove label to issue #${issueNumber}: ${error.message}`);
                 }
               }
             } else {
