@@ -18,6 +18,7 @@ jobs:
         with:
           script: |
             const pr = context.payload.pull_request;
+            const myLabel = 'status: has pull request';
             console.log(`PR Body: ${pr.body}`);
             const linkedIssues = pr.body.match(/(fixe?s?||close?s?|resolves?|addresse?s?)\s+#(\d+)/gi) || [];
 
@@ -28,17 +29,35 @@ jobs:
                 console.log(`Issue #${issueNumber}`);
             
                 try {
-                  const response = await github.rest.issues.removeLabel({
+                    const { data } = await github.rest.issues.listLabelsOnIssue({
+                    issue_number: issueNumber,
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    issue_number: parseInt(issueNumber),  // Convert issue number to integer
-                    labels: ['status:%20has%20pull%20request']  // Replace with your actual label
-                  });
-                  console.log(`Removed label to issue #${issueNumber}:`, response.data);
-                } catch (error) {
-                  console.error(`Failed to remove label to issue #${issueNumber}: ${error.message}`);
-                }
-              }
-            } else {
-              console.log('No linked issues found in PR body.');
+                  })
+
+                  // Return early if there are no labels
+                  if (data.length == 0){
+                    console.log(`Issue ${issueNumber} has no labels; not attempting to remove label ${myLabel}`)
+                    return
+                  }
+
+            // Check if myLabel is present
+            const filteredData = data.filter(label => label.name == myLabel)
+
+            // Return early if filtering didn't identify the label as present
+            if (filteredData.length == 0){
+              console.log(`Label "${myLabel}" not found on issue; not attempting to remove it.`)
+              return
+            }
+
+            console.log(`Label "${myLabel}" found! Now deleting it from the issue...`)
+
+            await github.rest.issues.removeLabel({
+              issue_number: context.{issueNumber},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: myLabel
+            })
+            }
+            }
             }
