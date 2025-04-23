@@ -55,7 +55,7 @@ jobs:
             }
 
       - name: Add label to linked issue for non-approved PR
-        if: github.event.review.state == 'false' && github.event.pull_request.merged == false
+        if: github.event.review.state == 'false'
         uses: actions/github-script@v6
         with:
           script: |
@@ -115,7 +115,7 @@ jobs:
             }
             
       - name: Remove label on linked issue when PR Closed
-        if: github.event.action == 'closed'
+        if: ((github.event.action == 'closed') && (github.event.pull_request.merged == false))
         uses: actions/github-script@v6
         with:
           script: |
