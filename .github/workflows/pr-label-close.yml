@@ -25,7 +25,7 @@ jobs:
               for (const issue of linkedIssues) {
                 // Extract just the number part (the digits after the # symbol)
                 const issueNumber = issue.match(/#(\d+)/)[1];  // Extract the digits after '#'
-                console.log(`Attempting to add label to issue #${issueNumber}`);
+                console.log(`Issue #${issueNumber}`);
             
                 try {
                   const response = await github.rest.issues.removeLabel({
