@@ -1,4 +1,4 @@
-name: Label Issue after PR creation or closing
+name: Label Issue after PR creation, editing or reopening
 
 on:
   pull_request:
