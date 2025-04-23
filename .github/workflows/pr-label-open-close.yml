@@ -1,0 +1,55 @@
+name: Label Issue after PR creation, editing or reopening
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, closed]
+
+jobs:
+  label_issue:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Print PR Body
+        run: echo "${{ github.event.pull_request.body }}"
+
+      - name: Add or Remove label from linked issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const action = context.payload.action;
+            console.log(`PR Action: ${action}`);
+            console.log(`PR Body: ${pr.body}`);
+            const linkedIssues = pr.body.match(/(fixe?s?|close?s?|resolves?|addresse?s?)\s+#(\d+)/gi) || [];
+
+            for (const issue of linkedIssues) {
+              const issueNumber = issue.match(/#(\d+)/)[1];
+
+              if (action === 'closed' && !pr.merged) {
+                // Remove label when PR is closed and not merged
+                try {
+                  const response = await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: parseInt(issueNumber),
+                    name: 'status: has pull request'
+                  });
+                  console.log(`Label removed from issue #${issueNumber}:`, response.data);
+                } catch (error) {
+                  console.error(`Failed to remove label from issue #${issueNumber}: ${error.message}`);
+                }
+              } else if (['opened', 'reopened', 'edited'].includes(action)) {
+                // Add label when PR is opened, edited, or reopened
+                try {
+                  const response = await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: parseInt(issueNumber),
+                    labels: ['status: has pull request']
+                  });
+                  console.log(`Label added to issue #${issueNumber}:`, response.data);
+                } catch (error) {
+                  console.error(`Failed to add label to issue #${issueNumber}: ${error.message}`);
+                }
+              }
+            }
