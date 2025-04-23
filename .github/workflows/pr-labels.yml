@@ -55,7 +55,7 @@ jobs:
             }
 
       - name: Add label to linked issue for non-approved PR
-        if: env.approved == 'false'
+        if: github.event.review.state == 'false' && github.event.pull_request.merged == false
         uses: actions/github-script@v6
         with:
           script: |
