@@ -134,7 +134,7 @@ jobs:
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: parseInt(issueNumber),  // Convert issue number to integer
-                    name: ['status: has pull request']  // Replace with your actual label
+                    name:   // Replace with your actual label
                   });
                   console.log(`Label removed to issue #${issueNumber}:`, response.data);
                 } catch (error) {
