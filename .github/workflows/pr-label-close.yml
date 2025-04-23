@@ -29,11 +29,16 @@ jobs:
                 console.log(`Issue #${issueNumber}`);
             
                 try {
-                    const { data } = await github.rest.issues.listLabelsOnIssue({
-                    issue_number: issueNumber,
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                  })
+                      const { data } = await github.rest.issues.listLabelsOnIssue({
+                      issue_number: issueNumber,
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                    });
+
+                    console.log(`Issue #${issueNumber}:`, response.data);
+                } catch (error) {
+                  console.error(`Failed to get issue #${issueNumber}: ${error.message}`);
+                }
 
                   // Return early if there are no labels
                   if (data.length == 0){
@@ -41,24 +46,23 @@ jobs:
                     return
                   }
 
-            // Check if myLabel is present
-            const filteredData = data.filter(label => label.name == myLabel)
-
-            // Return early if filtering didn't identify the label as present
-            if (filteredData.length == 0){
-              console.log(`Label "${myLabel}" not found on issue; not attempting to remove it.`)
-              return
-            }
-
-            console.log(`Label "${myLabel}" found! Now deleting it from the issue...`)
-
-            await github.rest.issues.removeLabel({
-              issue_number: context.{issueNumber},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: myLabel
-            })
-            }
-            } else {
-              console.log('No linked issues found in PR body.');
-            }
+                    // Check if myLabel is present
+                    const filteredData = data.filter(label => label.name == myLabel)
+        
+                    // Return early if filtering didn't identify the label as present
+                    if (filteredData.length == 0){
+                      console.log(`Label "${myLabel}" not found on issue; not attempting to remove it.`)
+                      return
+                    }
+        
+                    console.log(`Label "${myLabel}" found! Now deleting it from the issue...`)
+        
+                    await github.rest.issues.removeLabel({
+                      issue_number: context.issue_number,
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      name: myLabel
+                    });
+                    }}
+            
+                  
