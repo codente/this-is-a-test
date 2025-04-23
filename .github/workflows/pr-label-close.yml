@@ -1,0 +1,44 @@
+name: Label Issue after PR closing
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  label_issue:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Print PR Body
+        run: echo "${{ github.event.pull_request.body }}"
+
+      - name: Remove label on linked issue if PR closed and not merged
+        uses: actions/github-script@v6
+        if: github.event.pull_request.merged == false
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            console.log(`PR Body: ${pr.body}`);
+            const linkedIssues = pr.body.match(/(fixe?s?||close?s?|resolves?|addresse?s?)\s+#(\d+)/gi) || [];
+
+            if (linkedIssues.length > 0) {
+              for (const issue of linkedIssues) {
+                // Extract just the number part (the digits after the # symbol)
+                const issueNumber = issue.match(/#(\d+)/)[1];  // Extract the digits after '#'
+                console.log(`Attempting to add label to issue #${issueNumber}`);
+            
+                try {
+                  const response = await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: parseInt(issueNumber),  // Convert issue number to integer
+                    labels: ['status: has pull request']  // Replace with your actual label
+                  });
+                  console.log(`Removed label to issue #${issueNumber}:`, response.data);
+                } catch (error) {
+                  console.error(`Failed to remove label to issue #${issueNumber}: ${error.message}`);
+                }
+              }
+            } else {
+              console.log('No linked issues found in PR body.');
+            }
